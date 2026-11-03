@@ -4,27 +4,50 @@ import asyncio
 import json
 import re
 import sqlite3
+import os
+import secrets
 from contextlib import contextmanager
 from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
 import oracledb
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
 
 APP_DIR = Path(__file__).resolve().parent
+load_dotenv(APP_DIR.parent / ".env")
+API_KEY = os.getenv("ANYDB_API_KEY")
+
 HISTORY_DB = APP_DIR.parent / "anydb_history.sqlite3"
 RETENTION_DAYS = 7
 MAX_QUERY_ROWS = 200
 
 app = FastAPI(title="AnyDB Oracle", version="1.0.0", description="Oracle-only database explorer, SQL workspace and change-impact history.")
+
+@app.middleware("http")
+async def protect_api(request: Request, call_next):
+    if request.url.path == "/api/health":
+        return await call_next(request)
+
+    supplied_key = request.headers.get("X-API-Key", "")
+
+    if not API_KEY or not secrets.compare_digest(supplied_key, API_KEY):
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=401,
+            content={"detail": "Invalid or missing API key."}
+        )
+
+    return await call_next(request)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174", "http://127.0.0.1:5174"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174", "http://127.0.0.1:5174","https://any-db.vercel.app"],
     allow_credentials=False,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "X-API-Key"],
 )
 
 class ConnectionInput(BaseModel):

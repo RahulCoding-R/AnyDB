@@ -2,13 +2,26 @@ import { useEffect, useMemo, useState } from 'react'
 import './styles.css'
 import DatabaseDiagram from './components/DatabaseDiagram'
 
-const API = 'http://127.0.0.1:8000'
+const API = 'https://opened-now-whatever-upload.trycloudflare.com'
 const initialConnection = { host: 'localhost', port: '1521', service_name: 'FREEPDB1', username: 'HR', password: '', schema: 'HR' }
 
 async function request(path, options = {}) {
+  let apiKey = localStorage.getItem('anydb_api_key')
+
+  if (!apiKey) {
+    apiKey = window.prompt('Enter your AnyDB API key:')
+    if (apiKey) {
+      localStorage.setItem('anydb_api_key', apiKey)
+    }
+  }
+
   const response = await fetch(`${API}${path}`, {
     ...options,
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': apiKey || '',
+      ...(options.headers || {}),
+    },
   })
   const data = await response.json().catch(() => ({}))
   if (!response.ok) throw new Error(data.detail || `Request failed (${response.status})`)
