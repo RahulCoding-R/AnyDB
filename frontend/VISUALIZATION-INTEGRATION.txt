@@ -1,0 +1,10 @@
+ANYDB COMPLETE FRONTEND (WITH VISUALIZATIONS)
+
+Replace the frontend folder in your COPIED AnyDB project with this frontend folder.
+The frontend includes the schema map, dependency map, and impact map integration.
+The package.json already includes reactflow.
+
+Your backend folder is not included or changed. Keep your existing backend as-is.
+After replacing the folder, open a terminal in frontend and run:
+  npm install
+  npm run dev
