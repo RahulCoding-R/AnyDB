@@ -213,7 +213,7 @@ function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#overview" onClick={() => setActive('overview')}><span className="brand-icon">A</span><span>AnyDB</span></a>
+        <a className="brand brand-text" href="#overview" onClick={() => setActive('overview')}>AnyDB</a>
         <div className="connection-status"><span className={connected ? 'status-dot on' : 'status-dot'} />{connected ? `Connected · ${schema?.owner || connection.username}` : 'Not connected'}</div>
       </header>
 
