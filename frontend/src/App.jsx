@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import './styles.css'
 import DatabaseDiagram from './components/DatabaseDiagram'
 
-const API = 'https://small-restore-adjustment-varieties.trycloudflare.com'
+const API = 'https://capital-expo-prepare-medical.trycloudflare.com'
 const initialConnection = { host: 'localhost', port: '1521', service_name: 'FREEPDB1', username: 'HR', password: '', schema: 'HR' }
 
 async function request(path, options = {}) {
